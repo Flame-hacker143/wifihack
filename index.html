@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wi-Fi Penetration Simulation</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        color: #00ff9c;
+        font-family: "Courier New", monospace;
+    }
+    .terminal {
+        padding: 20px;
+        max-width: 900px;
+        margin: auto;
+    }
+    .title {
+        color: #00ffaa;
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+    .log {
+        line-height: 1.6;
+        white-space: pre-line;
+    }
+    .warning {
+        margin-top: 20px;
+        color: #ff4444;
+        border-top: 1px solid #333;
+        padding-top: 10px;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+
+<div class="terminal">
+    <div class="title">📡 Wi-Fi Security Simulation</div>
+    <div id="log" class="log"></div>
+
+    <div class="warning">
+        ⚠ DISCLAIMER:  
+        This is a **visual simulation only** for education, demo, or entertainment.  
+        No real networks are scanned, accessed, or hacked.
+    </div>
+</div>
+
+<script>
+const lines = [
+    "[*] Initializing wireless modules...",
+    "[*] Scanning nearby networks...",
+    "[+] Network found: HOME_WIFI_5G",
+    "[+] Encryption: WPA2",
+    "[*] Injecting packets...",
+    "[*] Capturing handshake...",
+    "[*] Running brute-force simulation...",
+    "[#####################-----] 85%",
+    "[+] Password found: ********",
+    "[✓] Simulation completed successfully."
+];
+
+let i = 0;
+const log = document.getElementById("log");
+
+function typeLine() {
+    if (i < lines.length) {
+        log.innerHTML += lines[i] + "\n";
+        i++;
+        setTimeout(typeLine, 700);
+    }
+}
+
+typeLine();
+</script>
+
+</body>
+</html>
