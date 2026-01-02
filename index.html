@@ -2,76 +2,175 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Wi-Fi Penetration Simulation</title>
+<title>Wi-Fi SecureX</title>
+
 <style>
-    body {
-        margin: 0;
-        background: black;
-        color: #00ff9c;
-        font-family: "Courier New", monospace;
-    }
-    .terminal {
-        padding: 20px;
-        max-width: 900px;
-        margin: auto;
-    }
-    .title {
-        color: #00ffaa;
-        font-size: 22px;
-        margin-bottom: 10px;
-    }
-    .log {
-        line-height: 1.6;
-        white-space: pre-line;
-    }
-    .warning {
-        margin-top: 20px;
-        color: #ff4444;
-        border-top: 1px solid #333;
-        padding-top: 10px;
-        font-size: 14px;
-    }
+:root {
+    --green: #00ff9c;
+    --dark: #050505;
+    --card: #0d0d0d;
+}
+
+body {
+    margin: 0;
+    background: black;
+    color: var(--green);
+    font-family: "Courier New", monospace;
+}
+
+.terminal {
+    padding: 20px;
+    max-width: 960px;
+    margin: auto;
+    background: linear-gradient(180deg, #020202, #000);
+}
+
+.title {
+    font-size: 22px;
+    color: #00ffaa;
+    margin-bottom: 10px;
+}
+
+.status {
+    font-size: 14px;
+    color: #ffaa00;
+    margin-bottom: 15px;
+}
+
+.log {
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.cursor::after {
+    content: "▋";
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
 </style>
 </head>
+
 <body>
 
 <div class="terminal">
-    <div class="title">📡 Wi-Fi Security Simulation</div>
-    <div id="log" class="log"></div>
-
-    <div class="warning">
-        ⚠ DISCLAIMER:  
-        This is a **visual simulation only** for education, demo, or entertainment.  
-        No real networks are scanned, accessed, or hacked.
-    </div>
+    <div class="title">📡 Wi-Fi SecureX Console</div>
+    <div class="status">Interface: wlan0 | Mode: Monitor | Driver: ath9k</div>
+    <div id="log" class="log cursor"></div>
 </div>
 
 <script>
-const lines = [
-    "[*] Initializing wireless modules...",
-    "[*] Scanning nearby networks...",
-    "[+] Network found: HOME_WIFI_5G",
-    "[+] Encryption: WPA2",
-    "[*] Injecting packets...",
-    "[*] Capturing handshake...",
-    "[*] Running brute-force simulation...",
-    "[#####################-----] 85%",
-    "[+] Password found: ********",
-    "[✓] Simulation completed successfully."
-];
-
-let i = 0;
 const log = document.getElementById("log");
 
-function typeLine() {
-    if (i < lines.length) {
-        log.innerHTML += lines[i] + "\n";
-        i++;
-        setTimeout(typeLine, 700);
+const networks = [
+    "TP-Link_892A",
+    "HOME_NET_5G",
+    "Redmi_WiFi_2.4G",
+    "ZTE_Fiber",
+    "NETGEAR_EXT",
+    "Galaxy_Hotspot",
+    "Linksys_AC1200"
+];
+
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function fakeMAC() {
+    return Array.from({length:6}, () =>
+        rand(0,255).toString(16).padStart(2,"0")
+    ).join(":");
+}
+
+const steps = [
+    "[*] Loading kernel modules...",
+    "[*] Enabling monitor mode on wlan0...",
+    "[✓] Monitor mode enabled",
+    "",
+    "[*] Scanning 2.4GHz / 5GHz spectrum..."
+];
+
+let stepIndex = 0;
+
+function typeStep() {
+    if (stepIndex < steps.length) {
+        log.innerHTML += steps[stepIndex] + "\n";
+        stepIndex++;
+        setTimeout(typeStep, 600);
+    } else {
+        scanNetworks();
     }
 }
 
-typeLine();
+function scanNetworks() {
+    let count = rand(3, 6);
+    let i = 0;
+
+    let scanInterval = setInterval(() => {
+        if (i >= count) {
+            clearInterval(scanInterval);
+            setTimeout(startAttack, 1200);
+            return;
+        }
+
+        const name = networks[rand(0, networks.length - 1)];
+        log.innerHTML +=
+`[+] Found Network: ${name}
+    BSSID: ${fakeMAC()}
+    Channel: ${rand(1,11)}
+    Signal: -${rand(30,70)} dBm
+    Encryption: WPA2-PSK\n\n`;
+        i++;
+    }, 900);
+}
+
+function startAttack() {
+    const attackSteps = [
+        "[*] Selecting target network...",
+        "[*] Listening for handshake...",
+        "[*] Capturing packets...",
+        "[*] Valid handshake acquired ✔",
+        "",
+        "[*] Initializing key recovery engine..."
+    ];
+
+    let i = 0;
+    let attackInterval = setInterval(() => {
+        if (i >= attackSteps.length) {
+            clearInterval(attackInterval);
+            bruteForce();
+            return;
+        }
+        log.innerHTML += attackSteps[i] + "\n";
+        i++;
+    }, 700);
+}
+
+function bruteForce() {
+    let percent = 0;
+
+    let bar = setInterval(() => {
+        percent += rand(3, 8);
+        if (percent >= 100) {
+            clearInterval(bar);
+            log.innerHTML +=
+`[##############################] 100%
+[✓] Key verification successful
+[✓] Session closed safely\n`;
+            return;
+        }
+
+        log.innerHTML +=
+`[${"#".repeat(percent/4)}${"-".repeat(25 - percent/4)}] ${percent}%\n`;
+    }, 500);
+}
+
+typeStep();
+
+// Prevent refresh feeling
+window.onbeforeunload = () => "Session still running...";
 </script>
 
 </body>
